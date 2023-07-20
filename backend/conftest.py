@@ -67,11 +67,14 @@ def create_test_db():
     Base.metadata.create_all(test_engine)
 
     # Run the tests
-    yield
-
-    # Drop the test database
-    drop_database(test_db_url)
-
+    try:
+        yield
+    except Exception as e:
+        # Optional: print or log the error
+        print("An error occurred during tests:", str(e))
+    finally:
+        # Drop the test database
+        drop_database(test_db_url)
 
 @pytest.fixture
 def client(test_db):
