@@ -58,6 +58,10 @@ def create_test_db():
 
     test_db_url = get_test_db_url()
 
+    # Drop the test database if it already exists
+    if database_exists(test_db_url):
+        drop_database(test_db_url)
+
     # Create the test database
     assert not database_exists(
         test_db_url
@@ -66,15 +70,7 @@ def create_test_db():
     test_engine = create_engine(test_db_url)
     Base.metadata.create_all(test_engine)
 
-    # Run the tests
-    try:
-        yield
-    except Exception as e:
-        # Optional: print or log the error
-        print("An error occurred during tests:", str(e))
-    finally:
-        # Drop the test database
-        drop_database(test_db_url)
+    yield
 
 @pytest.fixture
 def client(test_db):
