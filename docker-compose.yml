@@ -43,8 +43,12 @@ services:
         - 5555:5555
     depends_on:
       - "redis"
+    environment:
+    - CELERY_BROKER_URL=redis://redis:6379/0
 
   backend:
+    ports:
+      - 8888:8888
     build:
       context: backend
       dockerfile: Dockerfile
@@ -54,9 +58,29 @@ services:
       - ./backend:/app/
     environment:
       PYTHONPATH: .
-      DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/postgres'
+      DATABASE_URL: 'mysql+pymysql://user:password@mysql:3306/testdb?charset=utf8mb4'
     depends_on:
-      - "postgres"
+      - "mysql"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    entrypoint: bash -c "yarn && yarn start"
+    volumes:
+      - ./frontend/src:/app/src
+      - type: bind
+        source: ./frontend/package.json
+        target: /app/package.json
+    environment:
+      - REACT_APP_API_BASE_URL=http://localhost:8000/api/v1
+      - REACT_APP_TIME_OUT=25000
+      - REACT_APP_IMAGE_URL=https://vn-authoring-system-content-upload-s3.s3.ap-northeast-1.amazonaws.com/asset_imgs/
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    restart: always
 
 volumes:
   mysql-data:
