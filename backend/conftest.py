@@ -120,15 +120,23 @@ def test_superuser(test_db) -> models.User:
     Superuser for testing
     """
 
-    user = models.User(
-        email="fakeadmin@email.com",
-        hashed_password=get_password_hash(),
-        is_superuser=True,
-        first_name="Admin",
-        last_name="Admin",
-    )
-    test_db.add(user)
-    test_db.commit()
+    # Check if user already exists
+    user = test_db.query(models.User).filter(
+        models.User.email == "fakeadmin@email.com"
+    ).first()
+    
+    # If user does not exist, create new one
+    if not user:
+        user = models.User(
+            email="fakeadmin@email.com",
+            hashed_password=get_password_hash(),
+            is_superuser=True,
+            first_name="Admin",
+            last_name="Admin",
+        )
+        test_db.add(user)
+        test_db.commit()
+    
     return user
 
 
