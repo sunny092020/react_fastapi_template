@@ -4,4 +4,5 @@
 set -e
 
 reset
-docker-compose run backend pytest $@
+
+docker exec -it backend bash -c "pytest $@"
