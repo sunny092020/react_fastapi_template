@@ -14,6 +14,9 @@ def init() -> None:
         UserCreate(
             email="admin@test.com",
             password="admin",
+            first_name="Admin",
+            last_name="Admin",
+            address="Admin address",
             is_active=True,
             is_superuser=True,
         ),
