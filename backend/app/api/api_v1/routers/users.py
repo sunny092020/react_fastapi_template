@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, Response, encoders
+from fastapi import APIRouter, Request, Depends, Response
 import typing as t
 
 from app.db.session import get_db
@@ -9,7 +9,7 @@ from app.db.crud import (
     delete_user,
     edit_user,
 )
-from app.db.schemas import UserCreate, UserEdit, User, UserOut
+from app.db.schemas import UserCreate, UserEdit, User
 from app.core.auth import get_current_active_user, get_current_active_superuser
 
 users_router = r = APIRouter()
@@ -59,6 +59,7 @@ async def user_details(
     user = get_user(db, user_id)
     return user
 
+
 @r.post("/users", response_model=User, response_model_exclude_none=True)
 async def user_create(
     request: Request,
@@ -72,9 +73,7 @@ async def user_create(
     return create_user(db, user)
 
 
-@r.put(
-    "/users/{user_id}", response_model=User, response_model_exclude_none=True
-)
+@r.put("/users/{user_id}", response_model=User, response_model_exclude_none=True)
 async def user_edit(
     request: Request,
     user_id: int,
@@ -88,9 +87,7 @@ async def user_edit(
     return edit_user(db, user_id, user)
 
 
-@r.delete(
-    "/users/{user_id}", response_model=User, response_model_exclude_none=True
-)
+@r.delete("/users/{user_id}", response_model=User, response_model_exclude_none=True)
 async def user_delete(
     request: Request,
     user_id: int,

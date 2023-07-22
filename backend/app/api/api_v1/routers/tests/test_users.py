@@ -8,20 +8,16 @@ def test_get_users(client, test_superuser, superuser_token_headers):
     users = response.json()
 
     # Assert that test_superuser is in the response
-    assert any(user['email'] == test_superuser.email for user in users)
+    assert any(user["email"] == test_superuser.email for user in users)
 
 
 def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
     before_delete_user_length = len(test_db.query(models.User).all())
 
     # verify user with id of test_superuser.id exists
-    assert test_db.query(models.User).filter(
-        models.User.id == test_superuser.id
-    ).first()
+    assert test_db.query(models.User).filter(models.User.id == test_superuser.id).first()
 
-    response = client.delete(
-        f"/api/v1/users/{test_superuser.id}", headers=superuser_token_headers
-    )
+    response = client.delete(f"/api/v1/users/{test_superuser.id}", headers=superuser_token_headers)
 
     after_delete_user_length = len(test_db.query(models.User).all())
 
@@ -29,14 +25,11 @@ def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
     assert before_delete_user_length - 1 == after_delete_user_length
 
     # verify no user with id of test_superuser.id exists
-    assert not test_db.query(models.User).filter(
-        models.User.id == test_superuser.id
-    ).first()
+    assert not test_db.query(models.User).filter(models.User.id == test_superuser.id).first()
+
 
 def test_delete_user_not_found(client, superuser_token_headers):
-    response = client.delete(
-        "/api/v1/users/4321", headers=superuser_token_headers
-    )
+    response = client.delete("/api/v1/users/4321", headers=superuser_token_headers)
     assert response.status_code == 404
 
 
@@ -68,9 +61,7 @@ def test_edit_user_not_found(client, test_db, superuser_token_headers):
         "is_superuser": False,
         "password": "new_password",
     }
-    response = client.put(
-        "/api/v1/users/1234", json=new_user, headers=superuser_token_headers
-    )
+    response = client.put("/api/v1/users/1234", json=new_user, headers=superuser_token_headers)
     assert response.status_code == 404
 
 
@@ -79,9 +70,7 @@ def test_get_user(
     test_user,
     superuser_token_headers,
 ):
-    response = client.get(
-        f"/api/v1/users/{test_user.id}", headers=superuser_token_headers
-    )
+    response = client.get(f"/api/v1/users/{test_user.id}", headers=superuser_token_headers)
     assert response.status_code == 200
     assert response.json() == {
         "id": test_user.id,
