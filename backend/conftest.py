@@ -104,13 +104,21 @@ def test_user(test_db) -> models.User:
     Make a test user in the database
     """
 
-    user = models.User(
-        email="fake@email.com",
-        hashed_password=get_password_hash(),
-        is_active=True,
-    )
-    test_db.add(user)
-    test_db.commit()
+    # Query the database for a user with the specified email
+    user = test_db.query(models.User).filter(models.User.email == "fake@email.com").first()
+
+    # If no user was found, create a new one
+    if user is None:
+        user = models.User(
+            email="fake@email.com",
+            hashed_password=get_password_hash(),
+            is_active=True,
+            first_name="fake",
+            last_name="fake",
+        )
+        test_db.add(user)
+        test_db.commit()
+
     return user
 
 

@@ -79,6 +79,8 @@ def test_get_user(
         "email": test_user.email,
         "is_active": bool(test_user.is_active),
         "is_superuser": test_user.is_superuser,
+        "first_name": test_user.first_name,
+        "last_name": test_user.last_name,
     }
 
 
