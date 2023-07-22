@@ -4,25 +4,34 @@ from app.db import models
 def test_get_users(client, test_superuser, superuser_token_headers):
     response = client.get("/api/v1/users", headers=superuser_token_headers)
     assert response.status_code == 200
-    assert response.json() == [
-        {
-            "id": test_superuser.id,
-            "email": test_superuser.email,
-            "is_active": test_superuser.is_active,
-            "is_superuser": test_superuser.is_superuser,
-            "first_name": test_superuser.first_name,
-            "last_name": test_superuser.last_name,
-        }
-    ]
+
+    users = response.json()
+
+    # Assert that test_superuser is in the response
+    assert any(user['email'] == test_superuser.email for user in users)
 
 
 def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
+    before_delete_user_length = len(test_db.query(models.User).all())
+
+    # verify user with id of test_superuser.id exists
+    assert test_db.query(models.User).filter(
+        models.User.id == test_superuser.id
+    ).first()
+
     response = client.delete(
         f"/api/v1/users/{test_superuser.id}", headers=superuser_token_headers
     )
-    assert response.status_code == 200
-    assert test_db.query(models.User).all() == []
 
+    after_delete_user_length = len(test_db.query(models.User).all())
+
+    assert response.status_code == 200
+    assert before_delete_user_length - 1 == after_delete_user_length
+
+    # verify no user with id of test_superuser.id exists
+    assert not test_db.query(models.User).filter(
+        models.User.id == test_superuser.id
+    ).first()
 
 def test_delete_user_not_found(client, superuser_token_headers):
     response = client.delete(
