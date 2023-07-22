@@ -3,9 +3,7 @@
 
 name: Frontend
 
-on:
-  pull_request:
-    branches: [ "develop", "main" ]
+on: [push, pull_request]
 
 jobs:
   build:
