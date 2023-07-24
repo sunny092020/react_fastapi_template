@@ -16,7 +16,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Check SonarCloud Quality Gate
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        with:
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
-          scanMetadataReportFile: .scannerwork/report-task.txt
+        run: |
+          sleep 20  # Wait for the analysis to be processed
+          STATUS=$(curl -u ${{ secrets.SONAR_TOKEN }}: https://sonarcloud.io/api/project_badges/measure?project=sunny092020_react_fastapi_template&metric=alert_status | grep -oP 'QUALITY_GATE_\K\w+')
+          if [[ "$STATUS" != "OK" ]]; then exit 1; fi
