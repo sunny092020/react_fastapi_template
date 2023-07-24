@@ -19,4 +19,4 @@ jobs:
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-          fail-on-quality-gate-failure: true
+          scanMetadataReportFile: .scannerwork/report-task.txt
